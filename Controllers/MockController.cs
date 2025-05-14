@@ -18,32 +18,43 @@ public class MockController : Controller {
 
     
     [HttpGet()]
-    public IActionResult Get()
+    public async Task<IActionResult> GetAsync()
     {
-        // Your logic here
-        return Ok("Hello, World!");
+       // Get request path 
+       string path = HttpContext.Request.Path;
+
+       return GetResultFromMockResponse(await _mockRepository.GetMockAsync(path));
     }
 
     [HttpPost]
-    public async Task<IActionResult> GetMock([FromBody] JsonElement payload) {
-        
-    // Get request path
+    public async Task<IActionResult> GetMock([FromBody] JsonElement payload)
+    {
+        // Get request path
         string path = HttpContext.Request.Path;
 
-        // Call DB to get the mock response
-        MockResponses responses = await _mockRepository.GetMockAsync(path, payload.ToString());
+        return GetResultFromMockResponse(await _mockRepository.GetMockAsync(path, payload.ToString()));
+    }
 
-        // Use the response object
+    private IActionResult GetResultFromMockResponse(MockResponses responses)
+    {
         if (responses != null)
         {
-            if (responses.DelayTime > 0 ) {
+            if (responses.DelayTime > 0)
+            {
                 Thread.Sleep(responses.DelayTime);
             }
 
-            return Ok(responses); // return the mock response
+            return responses.HttpStatusCode switch
+            {
+                200 => Ok(responses.Payload),
+                400 => BadRequest(),
+                403 => Forbid(),
+                404 => NotFound(),
+                500 => StatusCode(500),
+                _ => Ok()
+            };
         }
 
         return NotFound("Mock response not found");
-
     }
 }

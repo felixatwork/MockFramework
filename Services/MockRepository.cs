@@ -14,17 +14,21 @@ public class MockRepository : IMockRepository {
         _db = db;
     }
 
-    public async Task<MockResponses> GetMockAsync(string requestpath, string requestpayload)
+    public async Task<MockResponses> GetMockAsync(string requestpath, string? requestpayload = null)
     {
-        var sql = ("SELECT requestpath, requestpayload, responsepayload, delay, httpstatuscode FROM Mock " +
-        "where requestpath = '") + requestpath + "' and requestpayload = '" + requestpayload + "";
-        
+        var sql = "SELECT requestpath, requestpayload, responsepayload, delay, httpstatuscode FROM Mock where requestpath = '" + requestpath + "'";
+
+        if (requestpayload != null) {
+            sql = $"{sql} and requestpayload = '{requestpayload}";
+        };
+
         var result = await _db.QueryAsync<Mock>(sql);
 
         return new MockResponses
         {
             Payload = result.FirstOrDefault().ResponsePayload,
-            DelayTime = (int)result.FirstOrDefault().Delay
+            DelayTime = (int)result.FirstOrDefault().Delay,
+            HttpStatusCode = (int)result.FirstOrDefault().HttpStatusCode
         };
     }
 }
