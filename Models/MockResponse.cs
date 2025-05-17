@@ -1,6 +1,6 @@
 namespace MockFramework.Models;
 
-public class MockResponses {
+public class MockResponse {
 
     public string Payload { get; set; }
 

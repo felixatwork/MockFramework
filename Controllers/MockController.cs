@@ -5,19 +5,18 @@ using MockFramework.Services;
 
 namespace MockFramework.Controllers;
 
-[Route("api/mock")]
 [ApiController]
+[Route("api/[controller]")]
 public class MockController : Controller {
 
-    private readonly MockRepository _mockRepository;
+    private readonly IMockRepository _mockRepository;
 
-    public MockController(MockRepository mockRepository)
+    public MockController(IMockRepository mockRepository)
     {
         _mockRepository = mockRepository;
     }
-
     
-    [HttpGet()]
+    [HttpGet("{*url}")]
     public async Task<IActionResult> GetAsync()
     {
        // Get request path 
@@ -26,7 +25,7 @@ public class MockController : Controller {
        return GetResultFromMockResponse(await _mockRepository.GetMockAsync(path));
     }
 
-    [HttpPost]
+    [HttpPost("{*url}")]
     public async Task<IActionResult> GetMock([FromBody] JsonElement payload)
     {
         // Get request path
@@ -35,7 +34,7 @@ public class MockController : Controller {
         return GetResultFromMockResponse(await _mockRepository.GetMockAsync(path, payload.ToString()));
     }
 
-    private IActionResult GetResultFromMockResponse(MockResponses responses)
+    private IActionResult GetResultFromMockResponse(MockResponse responses)
     {
         if (responses != null)
         {

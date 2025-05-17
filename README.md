@@ -7,3 +7,6 @@ Mock API is a tool allows create custom response payload base on the request.  I
 - Able to return custom reponse payload
 - Able to return custom HTTP Status code for error testing
 - Able to return custom delay time for SLA testing
+
+## Swagger
+[http://localhost:<port>/swagger](http://localhost:<port>/swagger)

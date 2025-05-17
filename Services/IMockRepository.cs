@@ -4,5 +4,11 @@ namespace MockFramework.Services;
 
 public interface IMockRepository {
 
-    Task<MockResponses> GetMockAsync(string requestpath, string? requestpayload = null);
+    Task<MockResponse> GetMockAsync(string requestpath, string? requestpayload = null);
+
+    Task<MockResponse> InsertMockAsync(string requestpath, string? requestpayload = null);
+
+    Task<MockResponse> UpdateMockAsync(string requestpath, string? requestpayload = null);
+
+    void DeleteMockAsync(string requestpath);
 }
