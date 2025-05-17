@@ -16,6 +16,8 @@ builder.Services.AddScoped<IMockRepository, MockRepository>();
 builder.Services.AddScoped<IDbConnection>(sp =>
     new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Logging.AddLog4Net();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

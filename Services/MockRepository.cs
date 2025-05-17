@@ -5,22 +5,25 @@ using MockFramework.Models;
 
 namespace MockFramework.Services;
 
-public class MockRepository : IMockRepository {
+public class MockRepository(IDbConnection db) : IMockRepository {
 
-    private readonly IDbConnection _db;
+    private readonly IDbConnection _db = db;
 
-    public MockRepository(IDbConnection db)
-    {
-        _db = db;
-    }
+    private readonly ILogger _logger;
 
     public async void DeleteMockAsync(string requestpath)
     {
-        if (requestpath != null) {
+        if (requestpath != null)
+        {
             var sql = "DELETE FROM Mock where requestpath = '" + requestpath + "'";
 
-            await _db.QueryAsync(sql);
-        };
+            int rowsAffected = await _db.ExecuteAsync(sql);
+
+            if (rowsAffected > 0) {
+                _logger.LogDebug("Record removed");
+            }
+        }
+        ;
     }
 
     public async Task<MockResponse> GetMockAsync(string requestpath, string? requestpayload = null)
@@ -41,13 +44,19 @@ public class MockRepository : IMockRepository {
         };
     }
 
-    public void InsertMockAsync(string requestpath, string? requestpayload = null)
+    public async void InsertMockAsync(MockCreateDto mockCreateDto)
     {
-        throw new NotImplementedException();
-    }
+        if (mockCreateDto != null)
+        {
+            var sql = @"
+            INSERT INTO mock (requestpath, requestpayload, responsepayload, delay, httpstatuscode)
+            VALUES (@RequestPath, @RequestPayload, @ResponsePayload, @Delay, @HttpStatusCode);";
 
-    public void UpdateMockAsync(string requestpath, string? requestpayload = null)
-    {
-        throw new NotImplementedException();
+            int rowsAffected = await _db.ExecuteAsync(sql);
+
+            if (rowsAffected > 0) {
+                _logger.LogDebug("New entry recorded");
+            }
+        }
     }
 }

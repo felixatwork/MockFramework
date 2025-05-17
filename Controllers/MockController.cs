@@ -6,7 +6,7 @@ using MockFramework.Services;
 namespace MockFramework.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/mock")]
 public class MockController : Controller {
 
     private readonly IMockRepository _mockRepository;
